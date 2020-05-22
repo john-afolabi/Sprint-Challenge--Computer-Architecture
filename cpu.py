@@ -82,6 +82,12 @@ class CPU:
         #elif op == "SUB": etc
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.equal = 1
+            else:
+                self.equal = 0
+            self.pc += 3
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -172,15 +178,9 @@ class CPU:
         self.reg[self.sp] += 1
 
     def handle_cmp(self):
-        reg_a = self.ram_read(self.pc + 1)
-        reg_b = self.ram_read(self.pc + 2)
-        operand_a = self.reg[reg_a]
-        operand_b = self.reg[reg_b]
-        if operand_a == operand_b:
-            self.equal = 1
-        else:
-            self.equal = 0
-        self.pc += 3
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("CMP", operand_a, operand_b)
 
     def handle_jmp(self):
         reg_a = self.ram_read(self.pc + 1)
@@ -198,7 +198,7 @@ class CPU:
     def handle_jne(self):
         reg_a = self.ram_read(self.pc + 1)
         operand_a = self.reg[reg_a]
-        if self.equal == False:
+        if not self.equal:
             self.pc = operand_a
         else:
             self.pc += 2
