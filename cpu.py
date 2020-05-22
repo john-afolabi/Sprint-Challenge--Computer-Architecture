@@ -15,6 +15,10 @@ CMP = 167
 JMP = 84
 JEQ = 85
 JNE = 86
+AND = 168
+OR = 170
+XOR = 171
+NOT = 105
 
 
 class CPU:
@@ -41,7 +45,11 @@ class CPU:
             CMP: self.handle_cmp,
             JMP: self.handle_jmp,
             JEQ: self.handle_jeq,
-            JNE: self.handle_jne
+            JNE: self.handle_jne,
+            AND: self.handle_and,
+            OR: self.handle_or,
+            XOR: self.handle_xor,
+            NOT: self.handle_not,
         }
 
     def ram_read(self, address):
@@ -87,7 +95,14 @@ class CPU:
                 self.equal = 1
             else:
                 self.equal = 0
-            self.pc += 3
+        elif op == "AND":
+            self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] = self.reg[reg_a] | self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
+        elif op == "NOT":
+            self.reg[reg_a] = ~self.reg[reg_a]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -181,6 +196,7 @@ class CPU:
         operand_a = self.ram_read(self.pc + 1)
         operand_b = self.ram_read(self.pc + 2)
         self.alu("CMP", operand_a, operand_b)
+        self.pc += 3
 
     def handle_jmp(self):
         reg_a = self.ram_read(self.pc + 1)
@@ -202,3 +218,27 @@ class CPU:
             self.pc = operand_a
         else:
             self.pc += 2
+
+    def handle_and(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("AND", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_or(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("OR", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_xor(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("XOR", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_not(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("NOT", operand_a, operand_b)
+        self.pc += 3
