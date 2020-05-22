@@ -12,6 +12,7 @@ ADD = 160
 CALL = 80
 RET = 17
 CMP = 167
+JMP = 84
 
 
 class CPU:
@@ -35,7 +36,8 @@ class CPU:
             ADD: self.handle_add,
             CALL: self.handle_call,
             RET: self.handle_ret,
-            CMP: self.handle_cmp
+            CMP: self.handle_cmp,
+            JMP: self.handle_jmp
         }
 
     def ram_read(self, address):
@@ -175,3 +177,8 @@ class CPU:
         else:
             self.equal = 0
         self.pc += 3
+
+    def handle_jmp(self):
+        reg_a = self.ram_read(self.pc + 1)
+        operand_a = self.reg[reg_a]
+        self.pc = operand_a
