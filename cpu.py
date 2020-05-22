@@ -13,6 +13,8 @@ CALL = 80
 RET = 17
 CMP = 167
 JMP = 84
+JEQ = 85
+JNE = 86
 
 
 class CPU:
@@ -37,7 +39,9 @@ class CPU:
             CALL: self.handle_call,
             RET: self.handle_ret,
             CMP: self.handle_cmp,
-            JMP: self.handle_jmp
+            JMP: self.handle_jmp,
+            JEQ: self.handle_jeq,
+            JNE: self.handle_jne
         }
 
     def ram_read(self, address):
@@ -182,3 +186,19 @@ class CPU:
         reg_a = self.ram_read(self.pc + 1)
         operand_a = self.reg[reg_a]
         self.pc = operand_a
+
+    def handle_jeq(self):
+        reg_a = self.ram_read(self.pc + 1)
+        operand_a = self.reg[reg_a]
+        if self.equal:
+            self.pc = operand_a
+        else:
+            self.pc += 2
+
+    def handle_jne(self):
+        reg_a = self.ram_read(self.pc + 1)
+        operand_a = self.reg[reg_a]
+        if self.equal == False:
+            self.pc = operand_a
+        else:
+            self.pc += 2
