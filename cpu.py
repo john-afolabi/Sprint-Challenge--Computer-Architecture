@@ -19,6 +19,9 @@ AND = 168
 OR = 170
 XOR = 171
 NOT = 105
+MOD = 164
+SHL = 172
+SHR = 173
 
 
 class CPU:
@@ -50,6 +53,9 @@ class CPU:
             OR: self.handle_or,
             XOR: self.handle_xor,
             NOT: self.handle_not,
+            MOD: self.handle_mod,
+            SHL: self.handle_shl,
+            SHR: self.handle_shr
         }
 
     def ram_read(self, address):
@@ -103,6 +109,12 @@ class CPU:
             self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
         elif op == "NOT":
             self.reg[reg_a] = ~self.reg[reg_a]
+        elif op == "MOD":
+            self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "SHL":
+            self.reg[reg_a] = self.reg[reg_a] << self.reg[reg_b]
+        elif op == "SHR":
+            self.reg[reg_a] = self.reg[reg_a] >> self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -241,4 +253,22 @@ class CPU:
         operand_a = self.ram_read(self.pc + 1)
         operand_b = self.ram_read(self.pc + 2)
         self.alu("NOT", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_mod(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("MOD", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_shl(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("SHL", operand_a, operand_b)
+        self.pc += 3
+
+    def handle_shr(self):
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        self.alu("SHR", operand_a, operand_b)
         self.pc += 3
